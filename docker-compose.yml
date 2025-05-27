@@ -1,0 +1,27 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: fridgyuser
+      POSTGRES_PASSWORD: fridgypass
+      POSTGRES_DB: fridgydb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  fridgy-app:
+    build: ./fridgy-app
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgres://fridgyuser:fridgypass@postgres:5432/fridgydb
+    depends_on:
+      - postgres
+    volumes:
+      - ./fridgy-app:/app
+    command: npm run dev
+
+volumes:
+  pgdata:
